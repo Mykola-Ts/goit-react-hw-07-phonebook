@@ -67,7 +67,16 @@ export const AddContactForm = () => {
       return;
     }
 
-    dispatch(addContact({ name, number }));
+    dispatch(addContact({ name, number }))
+      .unwrap()
+      .then(resp => {
+        toast.remove();
+        toast.success(`${name} added to contacts`);
+      })
+      .catch(error => {
+        toast.remove();
+        toast.error('Oops, something went wrong. Try again.');
+      });
 
     resetForm();
   };

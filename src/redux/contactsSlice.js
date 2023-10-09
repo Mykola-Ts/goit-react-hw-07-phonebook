@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { toast } from 'react-hot-toast';
 import { fetchContacts, addContact, deleteContact } from './operations';
 
 function isRejectedAction(action) {
@@ -16,9 +15,6 @@ const handleRejected = (state, action) => {
   if (action.type === fetchContacts.rejected.type) {
     state.error = action.payload;
   }
-
-  toast.remove();
-  toast.error('Oops, something went wrong. Try reloading the page.');
 };
 
 const contactsSlice = createSlice({
@@ -39,17 +35,11 @@ const contactsSlice = createSlice({
         state.isLoading = false;
         state.error = null;
         state.items.push(action.payload);
-
-        toast.remove();
-        toast.success(`${action.payload.name} added to contacts`);
       })
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
         state.items = state.items.filter(item => item.id !== action.payload.id);
-
-        toast.remove();
-        toast.success(`${action.payload.name} deleted from contacts`);
       })
       .addMatcher(isPendingAction, state => {
         state.isLoading = true;

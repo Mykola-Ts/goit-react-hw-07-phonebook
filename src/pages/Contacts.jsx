@@ -23,7 +23,12 @@ const Contacts = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(fetchContacts())
+      .unwrap()
+      .catch(error => {
+        toast.remove();
+        toast.error('Oops, something went wrong. Try reloading the page.');
+      });
   }, [dispatch]);
 
   return (
