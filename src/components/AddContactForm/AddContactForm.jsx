@@ -3,8 +3,8 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import { object, string } from 'yup';
 import { toast } from 'react-hot-toast';
 import { IoMdPersonAdd } from 'react-icons/io';
-import { getContacts } from 'redux/selectors';
-import { addContact } from 'redux/contactsSlice';
+import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
 import {
   ContactInput,
   ContactLabel,
@@ -45,7 +45,7 @@ const contactSchema = object({
 });
 
 export const AddContactForm = () => {
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   const onSubmit = ({ name, number }, { resetForm }) => {
@@ -67,10 +67,7 @@ export const AddContactForm = () => {
       return;
     }
 
-    dispatch(addContact(name, number));
-
-    toast.remove();
-    toast.success(`${name} added to contacts`);
+    dispatch(addContact({ name, number }));
 
     resetForm();
   };

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import { getFilterValue } from 'redux/selectors';
+import { selectFilterValue } from 'redux/selectors';
 import { filterContacts } from 'redux/filterSlice';
 import {
   FilterLabel,
@@ -12,7 +12,7 @@ import {
 
 export const Filter = () => {
   const dispatch = useDispatch();
-  const filter = useSelector(getFilterValue);
+  const filter = useSelector(selectFilterValue);
 
   const onChange = evt => {
     const value = evt.currentTarget.value.trim();
@@ -34,6 +34,7 @@ export const Filter = () => {
         <WrapperInput>
           <FilterInput
             type="text"
+            value={filter}
             placeholder="Name or number"
             onChange={onChange}
           />

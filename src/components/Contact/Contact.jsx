@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { toast } from 'react-hot-toast';
 import { GoTrash } from 'react-icons/go';
-import { deleteContact } from 'redux/contactsSlice';
+import { deleteContact } from 'redux/operations';
 import { Button, ContactInfo, ContactNumber } from './Contact.styled';
 
 export const Contact = ({ contact = {} }) => {
@@ -10,9 +9,6 @@ export const Contact = ({ contact = {} }) => {
 
   const onDelete = (id, name) => {
     dispatch(deleteContact(id));
-
-    toast.remove();
-    toast.success(`${name} deleted from contacts`);
   };
 
   const { id, name, number } = contact;

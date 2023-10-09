@@ -1,46 +1,61 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { createSlice } from '@reduxjs/toolkit';
+import { toast } from 'react-hot-toast';
+import { fetchContacts, addContact, deleteContact } from './operations';
+
+function isRejectedAction(action) {
+  return action.type.endsWith('rejected');
+}
+
+function isPendingAction(action) {
+  return action.type.endsWith('pending');
+}
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+
+  if (action.type === fetchContacts.rejected.type) {
+    state.error = action.payload;
+  }
+
+  toast.remove();
+  toast.error('Oops, something went wrong. Try reloading the page.');
+};
 
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
-    contacts: [],
+    items: [],
+    isLoading: false,
+    error: null,
   },
-  reducers: {
-    addContact: {
-      reducer(state, action) {
-        state.contacts.push(action.payload);
-      },
-      prepare(name, number) {
-        return {
-          payload: {
-            name,
-            number,
-            id: nanoid(),
-          },
-        };
-      },
-    },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items = action.payload;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items.push(action.payload);
 
-    deleteContact: {
-      reducer(state, action) {
-        state.contacts = state.contacts.filter(
-          ({ id }) => id !== action.payload
-        );
-      },
-    },
+        toast.remove();
+        toast.success(`${action.payload.name} added to contacts`);
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items = state.items.filter(item => item.id !== action.payload.id);
+
+        toast.remove();
+        toast.success(`${action.payload.name} deleted from contacts`);
+      })
+      .addMatcher(isPendingAction, state => {
+        state.isLoading = true;
+      })
+      .addMatcher(isRejectedAction, handleRejected);
   },
 });
 
-const persistConfig = {
-  key: 'contactsState',
-  storage,
-};
-
-export const contactsReducer = persistReducer(
-  persistConfig,
-  contactsSlice.reducer
-);
-
-export const { addContact, deleteContact } = contactsSlice.actions;
+export const contactsReducer = contactsSlice.reducer;
